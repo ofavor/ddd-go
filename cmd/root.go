@@ -3,24 +3,9 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"text/template"
 
 	"github.com/spf13/cobra"
 )
-
-func writeTemplateToFile(path string, tpl *template.Template, params interface{}) error {
-	fmt.Printf("Creating file: %s ...", path)
-	f, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	if err := tpl.Execute(f, params); err != nil {
-		return err
-	}
-	fmt.Println("        Done")
-	return nil
-}
 
 var rootCmd = &cobra.Command{
 	Use:   "ddd-go",
