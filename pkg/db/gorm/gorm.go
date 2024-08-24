@@ -1,12 +1,18 @@
 package gorm
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"database/sql/driver"
+	"encoding/base64"
+	"errors"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/ofavor/ddd-go/pkg/db"
-	"github.com/ofavor/ddd-go/pkg/util"
+	"github.com/ofavor/ddd-go/pkg/log"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -92,7 +98,7 @@ func (e *Encrypted) Scan(value interface{}) error {
 	default:
 		return fmt.Errorf("value must be string: %s", value)
 	}
-	str, err := util.AesDecrypt([]byte(encryptionKey), h)
+	str, err := aesDecrypt([]byte(encryptionKey), h)
 	if err != nil {
 		return err
 	}
@@ -102,9 +108,55 @@ func (e *Encrypted) Scan(value interface{}) error {
 
 // Scan implement gorm interface
 func (e Encrypted) Value() (driver.Value, error) {
-	str, err := util.AesEncrypt([]byte(encryptionKey), string(e))
+	str, err := aesEncrypt([]byte(encryptionKey), string(e))
 	if err != nil {
 		return nil, err
 	}
 	return str, nil
+}
+
+// AES encrypt a string
+func aesEncrypt(key []byte, message string) (encmess string, err error) {
+	plainText := []byte(message)
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		log.Error("[util-aes] encrypt error: ", err)
+		return
+	}
+	cipherText := make([]byte, aes.BlockSize+len(plainText))
+	iv := cipherText[:aes.BlockSize]
+	if _, err = io.ReadFull(rand.Reader, iv); err != nil {
+		log.Error("[util-aes] encrypt error: ", err)
+		return
+	}
+	stream := cipher.NewCFBEncrypter(block, iv)
+	stream.XORKeyStream(cipherText[aes.BlockSize:], plainText)
+	encmess = base64.URLEncoding.EncodeToString(cipherText)
+	return
+}
+
+// AES decrypt a string
+func aesDecrypt(key []byte, securemess string) (decodedmess string, err error) {
+	cipherText, err := base64.URLEncoding.DecodeString(securemess)
+	if err != nil {
+		log.Error("[util-aes] decrypt error: ", err)
+		return
+	}
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		log.Error("[util-aes] decrypt error: ", err)
+		return
+	}
+	if len(cipherText) < aes.BlockSize {
+		err = errors.New("cliphertext block size is too short")
+		log.Error("[util-aes] decrypt error: ", err)
+		return
+	}
+	iv := cipherText[:aes.BlockSize]
+	cipherText = cipherText[aes.BlockSize:]
+
+	stream := cipher.NewCFBDecrypter(block, iv)
+	stream.XORKeyStream(cipherText, cipherText)
+	decodedmess = string(cipherText)
+	return
 }

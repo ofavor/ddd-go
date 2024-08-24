@@ -8,7 +8,7 @@ Golang DDD 实践框架，可以快速创建DDD项目以及实体相关代码，
 $ ddd-go -h
 ddd-go is a library for golang DDD development. 
 It provides some useful tools for DDD development. 
-It could also help users generating projects, models, etc.
+It could also help users generating entity, etc.
 
 Usage:
   ddd-go [command]
@@ -46,14 +46,7 @@ ddd-go entity -m myproj -d ../myproj -e User -s usr
 ├── go.mod
 ├── .env
 └── internal
-    ├── application
-    │   ├── command
-    │   │   └── user_cmd.go
-    │   ├── dto
-    │   │   └── user_dto.go
-    │   ├── query
-    │   │   └── user_qry.go
-    │   └── user_app_svc.go
+    ├── app
     ├── domain
     │   ├── constant
     │   │   └── constant.go
@@ -61,17 +54,16 @@ ddd-go entity -m myproj -d ../myproj -e User -s usr
     │   │   └── errors.go
     │   ├── event
     │   │   └── event.go
-    │   ├── model
+    │   ├── entity
     │   │   ├── user.go
-    │   │   └── vo
+    │   ├── vo
     │   ├── repository
     │   │   └── user_repo.go
     │   └── service
     │       └── user_svc.go
-    ├── infrustructure
-    │   ├── registry
-    │   │   └── registry.go
-    │   └── repository
+    ├── infra
+    │   └── repo
+    │   ├── svc
     │       ├── dao
     │       │   └── user_dao.go
     │       └── persist
