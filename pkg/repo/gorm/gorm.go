@@ -36,7 +36,7 @@ func (r *GormRepo[E, D]) GetConn(tx tx.Trans) *gorm.DB {
 	}
 }
 
-func (r *GormRepo[E, D]) prepareQuery(query *gorm.DB, filter repo.Filter, sorter repo.Sorter) {
+func (r *GormRepo[E, D]) prepareQuery(query *gorm.DB, filter repo.Filter, sorts []string) {
 	if filter != nil {
 		conds := filter.Conditions()
 		for k, v := range conds {
@@ -48,11 +48,8 @@ func (r *GormRepo[E, D]) prepareQuery(query *gorm.DB, filter repo.Filter, sorter
 			}
 		}
 	}
-	if sorter != nil {
-		sorts := sorter.Sorts()
-		for _, v := range sorts {
-			query = query.Order(v)
-		}
+	for _, v := range sorts {
+		query = query.Order(v)
 	}
 }
 
@@ -66,10 +63,10 @@ func (r *GormRepo[E, D]) Count(tx tx.Trans, filter repo.Filter) (cnt int64, err 
 }
 
 // List implements repo.Repository.
-func (r *GormRepo[E, D]) List(tx tx.Trans, filter repo.Filter, sorter repo.Sorter, offset int64, limit int64) ([]E, error) {
+func (r *GormRepo[E, D]) List(tx tx.Trans, filter repo.Filter, sorts []string, offset int64, limit int64) ([]E, error) {
 	conn := r.GetConn(tx)
 	query := conn.Model(new(D))
-	r.prepareQuery(query, filter, sorter)
+	r.prepareQuery(query, filter, sorts)
 	arr := make([]*D, 0)
 	if err := query.Offset(int(offset)).Limit(int(limit)).Find(&arr).Error; err != nil {
 		return nil, err
