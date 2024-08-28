@@ -1,6 +1,9 @@
 package entity
 
-type Entity[D any] interface {
+type PersistSupport[D any] interface {
 	IsNew() bool
 	DAO() *D
+}
+
+type Entity[D any] interface {
 }

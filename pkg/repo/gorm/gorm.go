@@ -1,6 +1,8 @@
 package gorm
 
 import (
+	"fmt"
+
 	"github.com/ofavor/ddd-go/pkg/entity"
 	"github.com/ofavor/ddd-go/pkg/repo"
 	"github.com/ofavor/ddd-go/pkg/tx"
@@ -91,11 +93,15 @@ func (r *GormRepo[E, D]) Get(tx tx.Trans, id interface{}) (e E, err error) {
 
 // Save implements repo.Repository.
 func (r *GormRepo[E, D]) Save(tx tx.Trans, e E) error {
+	pe, ok := any(e).(entity.PersistSupport[D])
+	if !ok {
+		return fmt.Errorf("[repo-gorm] Entity is not persistable")
+	}
 	conn := r.GetConn(tx).Session(&gorm.Session{FullSaveAssociations: true})
-	if e.IsNew() {
-		return conn.Create(e.DAO()).Error
+	if pe.IsNew() {
+		return conn.Create(pe.DAO()).Error
 	} else {
-		return conn.Save(e.DAO()).Error
+		return conn.Save(pe.DAO()).Error
 	}
 }
 
