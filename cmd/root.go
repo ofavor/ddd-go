@@ -12,7 +12,7 @@ var rootCmd = &cobra.Command{
 	Short: "A generator golang DDD development",
 	Long: `ddd-go is a library for golang DDD development. 
 It provides some useful tools for DDD development. 
-It could also help users generating projects, models, etc. `,
+It could also help users generating entity, etc. `,
 }
 
 func Execute() {

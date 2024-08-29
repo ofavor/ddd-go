@@ -14,10 +14,8 @@ Usage:
   ddd-go [command]
 
 Available Commands:
-  completion  Generate the autocompletion script for the specified shell
   entity      Generate entity related files
   help        Help about any command
-  project     Create project
 
 Flags:
   -h, --help   help for ddd-go
@@ -25,100 +23,22 @@ Flags:
 Use "ddd-go [command] --help" for more information about a command.
 ```
 
-创建项目
-
-```bash
-ddd-go project -m myproj -d ../myproj
-```
-
 创建实体
 
 ```bash
+$ ddd-go entity -h
+Generate entity related files
+
+Usage:
+  ddd-go entity [flags]
+
+Flags:
+  -d, --directory string   project directory, default is '.' (default ".")
+  -h, --help               help for entity
+  -l, --layout string      project layout, default is 'kratos' (default "kratos")
+  -m, --module string      project module name
+  -n, --name string        entity name
+  -s, --short string       entity short name
+
 ddd-go entity -m myproj -d ../myproj -e User -s usr
-```
-
-创建的项目目录结构
-
-```bash
-.
-├── cmd
-│   └── main.go
-├── go.mod
-├── .env
-└── internal
-    ├── app
-    ├── domain
-    │   ├── constant
-    │   │   └── constant.go
-    │   ├── errors
-    │   │   └── errors.go
-    │   ├── event
-    │   │   └── event.go
-    │   ├── entity
-    │   │   ├── user.go
-    │   ├── vo
-    │   ├── repository
-    │   │   └── user_repo.go
-    │   └── service
-    │       └── user_svc.go
-    ├── infra
-    │   └── repo
-    │   ├── svc
-    │       ├── dao
-    │       │   └── user_dao.go
-    │       └── persist
-    │           └── user_repo.go
-    ├── interfaces
-    │   ├── event
-    │   └── rest
-    │       ├── form
-    │       │   └── user_form.go
-    │       ├── user_handler.go
-    │       └── view
-    │           └── user_vm.go
-    └── registry.go
-
-```
-
-修改.env中的相关参数
-```bash
-# Log
-LOG_LEVEL=debug
-
-# Server
-PORT=8081
-SWAGGER_DIR=../swagger-ui/dist
-PPROF=true
-JWT_KEY=i88U2kmkhwq29dkDD2ybb
-
-# Database
-DB_TYPE=mysql
-MYSQL_HOST=127.0.0.1
-MYSQL_PORT=3306
-MYSQL_USER=root
-MYSQL_PASSWORD=root
-MYSQL_DBNAME=myproj
-# POSTGRE_HOST=
-# POSTGRE_PORT=
-# POSTGRE_USER=
-# POSTGRE_PASSWORD=
-# POSTGRE_DBNAME=myproj
-
-# Cache
-CACHE_TYPE=redis
-CACHE_PREFIX=myproj
-REDIS_HOST=127.0.0.1
-REDIS_PORT=6379
-REDIS_PASSWORD=
-	
-# Event bus
-EVENT_BUS_TYPE=redis
-EVENT_CONSUME_GROUP=myproj-consumer-group	
-EVENT_BUFFER_SIZE=1000
-```
-
-启动服务
-
-```bash
-go run cmd/main.go
 ```
