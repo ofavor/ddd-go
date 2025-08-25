@@ -28,7 +28,7 @@ type gormDatabase struct {
 // Create gorm database
 func NewDatabase(
 	driver string,
-	dns string,
+	dsn string,
 	encKey string,
 	debug bool,
 ) db.Database {
@@ -47,9 +47,9 @@ func NewDatabase(
 	}
 	switch driver {
 	case "mysql":
-		conn, err = gorm.Open(mysql.Open(dns), conf)
+		conn, err = gorm.Open(mysql.Open(dsn), conf)
 	case "postgres":
-		conn, err = gorm.Open(postgres.Open(dns), conf)
+		conn, err = gorm.Open(postgres.Open(dsn), conf)
 	default:
 		panic("Unsupported database driver: " + driver)
 	}
